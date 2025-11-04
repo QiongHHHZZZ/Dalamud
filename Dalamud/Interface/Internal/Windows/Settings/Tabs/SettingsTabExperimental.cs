@@ -6,11 +6,11 @@ using Dalamud.Bindings.ImGui;
 using Dalamud.Configuration.Internal;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Internal.ReShadeHandling;
-using Dalamud.Interface.Internal.Windows.PluginInstaller;
 using Dalamud.Interface.Internal.Windows.Settings.Widgets;
 using Dalamud.Interface.Utility;
 using Dalamud.Plugin.Internal;
 using Dalamud.Utility;
+using Dalamud.Utility.Internal;
 
 namespace Dalamud.Interface.Internal.Windows.Settings.Tabs;
 
@@ -18,33 +18,28 @@ namespace Dalamud.Interface.Internal.Windows.Settings.Tabs;
     "StyleCop.CSharp.DocumentationRules",
     "SA1600:Elements should be documented",
     Justification = "Internals")]
-public class SettingsTabExperimental : SettingsTab
+internal sealed class SettingsTabExperimental : SettingsTab
 {
+    public override string Title => Loc.Localize("DalamudSettingsExperimental", "Experimental");
+
+    public override SettingsOpenKind Kind => SettingsOpenKind.Experimental;
+
     public override SettingsEntry[] Entries { get; } =
     [
         new SettingsEntry<bool>(
-            Loc.Localize("DalamudSettingsPluginTest", "Get plugin testing builds"),
-            string.Format(
-                Loc.Localize(
-                    "DalamudSettingsPluginTestHint",
-                    "Receive testing prereleases for selected plugins.\nTo opt-in to testing builds for a plugin, you have to right click it in the \"{0}\" tab of the plugin installer and select \"{1}\"."),
-                PluginCategoryManager.Locs.Group_Installed,
-                PluginInstallerWindow.Locs.PluginContext_TestingOptIn),
+            LazyLoc.Localize("DalamudSettingsPluginTest", "Get plugin testing builds"),
+            LazyLoc.Localize("DalamudSettingsPluginTestHint", "Receive testing prereleases for selected plugins.\nTo opt-in to testing builds for a plugin, you have to right click it in the \"Installed Plugins\" tab of the plugin installer and select \"Receive plugin testing versions\"."),
             c => c.DoPluginTest,
             (v, c) => c.DoPluginTest = v),
         new HintSettingsEntry(
-            Loc.Localize(
-                "DalamudSettingsPluginTestWarning",
-                "Testing plugins may contain bugs or crash your game. Please only enable this if you are aware of the risks."),
+            LazyLoc.Localize("DalamudSettingsPluginTestWarning", "Testing plugins may contain bugs or crash your game. Please only enable this if you are aware of the risks."),
             ImGuiColors.DalamudRed),
 
         new GapSettingsEntry(5),
 
         new ButtonSettingsEntry(
-            Loc.Localize("DalamudSettingsClearHidden", "Clear hidden plugins"),
-            Loc.Localize(
-                "DalamudSettingsClearHiddenHint",
-                "Restore plugins you have previously hidden from the plugin installer."),
+            LazyLoc.Localize("DalamudSettingsClearHidden", "Clear hidden plugins"),
+            LazyLoc.Localize("DalamudSettingsClearHiddenHint", "Restore plugins you have previously hidden from the plugin installer."),
             () =>
             {
                 Service<DalamudConfiguration>.Get().HiddenPluginInternalName.Clear();
@@ -148,8 +143,6 @@ public class SettingsTabExperimental : SettingsTab
             (v, c) => c.ProfilesEnabled = v),
             */
     ];
-
-    public override string Title => Loc.Localize("DalamudSettingsExperimental", "Experimental");
 
     public override void Draw()
     {
