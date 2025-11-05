@@ -50,12 +50,20 @@ jobs:
           echo "new_tag=$newTag" >> $env:GITHUB_OUTPUT
           echo "TAG=$newTag" >> $env:GITHUB_ENV
 
+      - name: Create and Push Git Tag
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a ${{ env.TAG }} -m "Release ${{ env.TAG }}"
+          git push origin ${{ env.TAG }}
+
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
 
       - uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '9.0.200'
+          
       - name: Define VERSION
         run: |
           # 包含生成的 TAG
@@ -68,8 +76,10 @@ jobs:
           ($env:BRANCH) >> VERSION
           ($env:COMMIT) >> VERSION
           ($env:TAG) >> VERSION
+          
       - name: Build and Test Dalamud
         run: .\build.ps1 ci
+        
       - name: Create hashlist
         run: .\CreateHashList.ps1 .\bin\Release
 
