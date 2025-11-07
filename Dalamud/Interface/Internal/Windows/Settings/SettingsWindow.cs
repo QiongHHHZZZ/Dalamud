@@ -152,7 +152,7 @@ internal sealed class SettingsWindow : Window
     {
         ImGui.SetNextItemWidth(-1);
         using (ImRaii.Disabled(this.CurrentlyOpenTab is SettingsTabAbout))
-            ImGui.InputTextWithHint("###searchInput"u8, Loc.Localize("DalamudSettingsSearchPlaceholder", "Search for settings..."), ref this.searchInput, 100, ImGuiInputTextFlags.AutoSelectAll);
+            ImGui.InputTextWithHint("###searchInput"u8, "搜索设置项...", ref this.searchInput, 100, ImGuiInputTextFlags.AutoSelectAll);
         ImGui.Spacing();
 
         var windowSize = ImGui.GetWindowSize();
