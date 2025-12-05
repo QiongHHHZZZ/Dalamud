@@ -179,18 +179,9 @@ internal class DalamudInterface : IInternalDisposableService
                     this.OpenSettings);
 
                 titleScreenMenu.AddEntryCore(
-                    "Toggle Dev Menu",
+                    Loc.Localize("TSMDalamudDevMenu", "Developer Menu"),
                     new ForwardingSharedImmediateTexture(dalamudAssetManager.GetDalamudTextureWrap(DalamudAsset.LogoSmall)),
-                    () => Service<DalamudInterface>.GetNullable()?.ToggleDevMenu(),
-                    VirtualKey.SHIFT);
-
-                if (Util.GetActiveTrack() != "release")
-                {
-                    titleScreenMenu.AddEntryCore(
-                        Loc.Localize("TSMDalamudDevMenu", "Developer Menu"),
-                        new ForwardingSharedImmediateTexture(dalamudAssetManager.GetDalamudTextureWrap(DalamudAsset.LogoSmall)),
-                        () => this.isImGuiDrawDevMenu = true);
-                }
+                    () => this.isImGuiDrawDevMenu = true);
             });
 
         this.creditsDarkeningAnimation.Point1 = Vector2.Zero;
@@ -861,21 +852,15 @@ internal class DalamudInterface : IInternalDisposableService
                         this.configuration.QueueSave();
                     }
 
-                    ImGui.Separator();
-
-                    if (ImGui.MenuItem("分支选择器"))
-                    {
-                        this.OpenBranchSwitcher();
-                    }
-
-                    ImGui.MenuItem(this.dalamud.StartInfo.GameVersion?.ToString() ?? "Unknown version", false, false);
-                    ImGui.MenuItem($"D: {Util.GetScmVersion()} CS: {Util.GetGitHashClientStructs()}[{FFXIVClientStructs.ThisAssembly.Git.Commits}]", false, false);
-                    ImGui.MenuItem($"CLR: {Environment.Version}", false, false);
+                    ImGui.MenuItem(this.dalamud.StartInfo.GameVersion?.ToString() ?? "未知版本", false, false);
+                    ImGui.MenuItem($"Dalamud: {Util.GetScmVersion()} CS: {Util.GetGitHashClientStructs()}[{FFXIVClientStructs.ThisAssembly.Git.Commits}]", false, false);
+                    ImGui.MenuItem($"FFXIVClientStructs: {Util.GetGitHashClientStructs()}[{FFXIVClientStructs.ThisAssembly.Git.Commits}]", false, false);
+                    ImGui.MenuItem($"运行时: {Environment.Version}", false, false);
 
                     ImGui.EndMenu();
                 }
 
-                if (ImGui.BeginMenu("GUI"u8))
+                if (ImGui.BeginMenu("插件"u8))
                 {
                     ImGui.MenuItem("为之后的窗口应用 Monospace 字体", string.Empty, ref this.isImGuiTestWindowsInMonospace);
                     ImGui.MenuItem("显示 ImGui Demo", string.Empty, ref this.isImGuiDrawDemoWindow);
@@ -943,7 +928,7 @@ internal class DalamudInterface : IInternalDisposableService
                     ImGui.EndMenu();
                 }
 
-                if (ImGui.BeginMenu("Game"u8))
+                if (ImGui.BeginMenu("游戏"u8))
                 {
                     if (ImGui.MenuItem("使用游戏默认的异常处理器"))
                     {
@@ -963,7 +948,7 @@ internal class DalamudInterface : IInternalDisposableService
                     ImGui.EndMenu();
                 }
 
-                if (ImGui.BeginMenu("Plugins"u8))
+                if (ImGui.BeginMenu("插件"u8))
                 {
                     if (ImGui.MenuItem("插件安装器"))
                     {
@@ -1019,7 +1004,7 @@ internal class DalamudInterface : IInternalDisposableService
                     ImGui.EndMenu();
                 }
 
-                if (ImGui.BeginMenu("Localization"u8))
+                if (ImGui.BeginMenu("本地化"u8))
                 {
                     var localization = Service<Localization>.Get();
 
@@ -1061,15 +1046,15 @@ internal class DalamudInterface : IInternalDisposableService
                 {
                     ImGui.PushFont(InterfaceManager.MonoFont);
 
-                    ImGui.BeginMenu($"{Util.GetActiveTrack() ?? "???"} on {Util.GetGitBranch() ?? "???"}", false);
-                    ImGui.BeginMenu($"{Util.GetScmVersion()}", false);
+                    ImGui.BeginMenu($"分支: {Util.GetGitBranch() ?? "???"}", false);
+                    ImGui.BeginMenu($"版本: {Util.GetScmVersion()}", false);
                     ImGui.BeginMenu(this.FrameCount.ToString("000000"), false);
                     ImGui.BeginMenu(ImGui.GetIO().Framerate.ToString("000"), false);
-                    ImGui.BeginMenu($"W:{Util.FormatBytes(GC.GetTotalMemory(false))}", false);
+                    ImGui.BeginMenu($"内存:{Util.FormatBytes(GC.GetTotalMemory(false))}", false);
 
                     var videoMem = this.interfaceManager.GetD3dMemoryInfo();
                     ImGui.BeginMenu(
-                        !videoMem.HasValue ? "V:???" : $"V:{Util.FormatBytes(videoMem.Value.Used)}",
+                        !videoMem.HasValue ? "显存:???" : $"显存:{Util.FormatBytes(videoMem.Value.Used)}",
                         false);
 
                     ImGui.PopFont();
