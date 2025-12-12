@@ -116,12 +116,12 @@ namespace Dalamud.Injector
                 }
                 else
                 {
-                    throw new CommandLineException($"\"{mainCommand}\" is not a valid command.");
+                    throw new CommandLineException($"\"{mainCommand}\" 非有效指令");
                 }
             }
             catch (Exception e)
             {
-                Log.Error(e, "Operation failed.");
+                Log.Error(e, "操作失败。");
                 return e.HResult;
             }
         }
@@ -148,7 +148,7 @@ namespace Dalamud.Injector
             var cwd = new FileInfo(Assembly.GetExecutingAssembly().Location).Directory;
             if (cwd.FullName != Directory.GetCurrentDirectory())
             {
-                Log.Debug($"Changing cwd to {cwd}");
+                Log.Debug($"切换工作目录为 {cwd}");
                 Directory.SetCurrentDirectory(cwd.FullName);
             }
         }
@@ -162,21 +162,21 @@ namespace Dalamud.Injector
                 if (exObj is CommandLineException clex)
                 {
                     Console.WriteLine();
-                    Console.WriteLine("Command line error: {0}", clex.Message);
+                    Console.WriteLine("命令行错误： {0}", clex.Message);
                     Console.WriteLine();
                     ProcessHelpCommand(args);
                 }
                 else if (Log.Logger == null)
                 {
-                    Console.WriteLine($"A fatal error has occurred: {eventArgs.ExceptionObject}");
+                    Console.WriteLine($"发生严重错误： {eventArgs.ExceptionObject}");
                 }
                 else if (exObj is Exception ex)
                 {
-                    Log.Error(ex, "A fatal error has occurred");
+                    Log.Error(ex, "发生严重错误");
                 }
                 else
                 {
-                    Log.Error("A fatal error has occurred: {Exception}", eventArgs.ExceptionObject.ToString());
+                    Log.Error("发生严重错误： {Exception}", eventArgs.ExceptionObject.ToString());
                 }
 
                 Log.CloseAndFlush();
@@ -205,7 +205,7 @@ namespace Dalamud.Injector
                          .CreateLogger();
 
             Log.Information(new string('-', 80));
-            Log.Information("Dalamud.Injector, (c) 2023 XIVLauncher Contributors");
+            Log.Information("Dalamud.Injector，(c) 2025 XIVLauncher Contributors");
         }
 
         private static void CullLogFile(string logPath, int cullingFileSize)
@@ -307,7 +307,7 @@ namespace Dalamud.Injector
             var languageStr = startInfo.Language.ToString().ToLowerInvariant();
             var platformStr = startInfo.Platform.ToString().ToLowerInvariant();
             var unhandledExceptionStr = startInfo.UnhandledException.ToString().ToLowerInvariant();
-            var troubleshootingData = "{\"empty\": true, \"description\": \"No troubleshooting data supplied.\"}";
+            var troubleshootingData = "{\"empty\": true, \"description\": \"无故障收集文件\"}";
             var launcherDirectory = startInfo.LauncherDirectory;
 
             // env vars are brought in prior to launch args, since args can override them.
@@ -444,7 +444,7 @@ namespace Dalamud.Injector
             }
             else
             {
-                throw new CommandLineException($"\"{languageStr}\" is not a valid supported language.");
+                throw new CommandLineException($"\"{languageStr}\" 非有效语言");
             }
 
             OSPlatform platform;
@@ -469,7 +469,7 @@ namespace Dalamud.Injector
             else
             {
                 platform = DetectPlatformHeuristic();
-                Log.Warning("Heuristically determined host system platform as {platform}", platform);
+                Log.Warning("通过启发式方法判断当前系统平台为 {platform}", platform);
             }
 
             startInfo.WorkingDirectory = workingDirectory;
@@ -526,7 +526,7 @@ namespace Dalamud.Injector
                     out var parsedUnhandledException)
                     ? parsedUnhandledException
                     : throw new CommandLineException(
-                          $"\"{unhandledExceptionStr}\" is not a valid unhandled exception handling mode.");
+                          $"\"{unhandledExceptionStr}\" 非有效异常处理模式");
 
             return startInfo;
         }
@@ -541,17 +541,17 @@ namespace Dalamud.Injector
 
             if (particularCommand is null or "help")
             {
-                Console.WriteLine("{0} help [command]", exeName);
+                Console.WriteLine("帮助： {0} help [command]", exeName);
             }
 
             if (particularCommand is null or "inject")
             {
-                Console.WriteLine("{0} inject [-h/--help] [-a/--all] [--warn] [--fix-acl] [--se-debug-privilege] [pid1] [pid2] [pid3] ...", exeName);
+                Console.WriteLine("用法： {0} inject [-h/--help] [-a/--all] [--warn] [--fix-acl] [--se-debug-privilege] [pid1] [pid2] [pid3] ...", exeName);
             }
 
             if (particularCommand is null or "launch")
             {
-                Console.WriteLine("{0} launch [-h/--help] [-f/--fake-arguments]", exeName);
+                Console.WriteLine("用法： {0} launch [-h/--help] [-f/--fake-arguments]", exeName);
                 Console.WriteLine("{0}        [-g path/to/ffxiv_dx11.exe] [--game=path/to/ffxiv_dx11.exe]", exeSpaces);
                 Console.WriteLine("{0}        [-m entrypoint|inject] [--mode=entrypoint|inject]", exeSpaces);
                 Console.WriteLine("{0}        [--handle-owner=inherited-handle-value]", exeSpaces);
@@ -560,19 +560,19 @@ namespace Dalamud.Injector
                 Console.WriteLine("{0}        [-- game_arg1=value1 game_arg2=value2 ...]", exeSpaces);
             }
 
-            Console.WriteLine("Specifying dalamud start info: [--dalamud-working-directory=path] [--dalamud-configuration-path=path]");
+            Console.WriteLine("指定 Dalamud 启动信息： [--dalamud-working-directory=path] [--dalamud-configuration-path=path]");
             Console.WriteLine("                               [--dalamud-plugin-directory=path] [--dalamud-platform=win32|linux|macOS]");
-            Console.WriteLine("                               [--dalamud-asset-directory=path] [--dalamud-delay-initialize=0(ms)]");
+            Console.WriteLine("                               [--dalamud-asset-directory=path] [--dalamud-delay-initialize=0 (ms)]");
             Console.WriteLine("                               [--dalamud-client-language=0-3|j(apanese)|e(nglish)|d|g(erman)|f(rench)]");
 
-            Console.WriteLine("Verbose logging:\t[-v]");
-            Console.WriteLine("Show Console:\t[--console] [--crash-handler-console]");
-            Console.WriteLine("Enable ETW:\t[--etw]");
-            Console.WriteLine("Disable legacy corrupted state exceptions:\t[--no-legacy-corrupted-state-exceptions]");
-            Console.WriteLine("Enable VEH:\t[--veh], [--veh-full], [--unhandled-exception=default|stalldebug|none]");
-            Console.WriteLine("Show messagebox:\t[--msgbox1], [--msgbox2], [--msgbox3]");
-            Console.WriteLine("No plugins:\t[--no-plugin] [--no-3rd-plugin]");
-            Console.WriteLine("Logging:\t[--logname=<logfile suffix>] [--logpath=<log base directory>]");
+            Console.WriteLine("详细日志：\t[-v]");
+            Console.WriteLine("显示控制台：\t[--console] [--crash-handler-console]");
+            Console.WriteLine("启用 ETW：\t[--etw]");
+            Console.WriteLine("禁用旧版损坏状态异常：\t[--no-legacy-corrupted-state-exceptions]");
+            Console.WriteLine("启用 VEH：\t[--veh], [--veh-full], [--unhandled-exception=default|stalldebug|none]");
+            Console.WriteLine("显示消息框：\t[--msgbox1], [--msgbox2], [--msgbox3]");
+            Console.WriteLine("不加载插件：\t[--no-plugin] [--no-3rd-plugin]");
+            Console.WriteLine("日志：\t[--logname=<logfile suffix>] [--logpath=<log base directory>]");
 
             return 0;
         }
@@ -598,7 +598,7 @@ namespace Dalamud.Injector
                     }
                     catch (ArgumentException)
                     {
-                        Log.Error("Could not find process with PID: {Pid}", pid);
+                        Log.Error("未找到 PID： {Pid} 的进程", pid);
                     }
 
                     continue;
@@ -627,7 +627,7 @@ namespace Dalamud.Injector
                 }
                 else
                 {
-                    Log.Warning($"\"{args[i]}\" is not a valid command line argument, ignoring.");
+                    Log.Warning($"参数 \"{args[i]}\" 非有效命令行参数，已忽略。");
                 }
             }
 
@@ -643,7 +643,7 @@ namespace Dalamud.Injector
             }
             else if (!processes.Any())
             {
-                Log.Error("No suitable target process has been found.");
+                Log.Error("未找到可用的目标进程。");
                 return -1;
             }
 
@@ -657,7 +657,7 @@ namespace Dalamud.Injector
 
                 if (result == MESSAGEBOX_RESULT.IDCANCEL)
                 {
-                    Log.Information("User cancelled injection");
+                    Log.Information("已取消注入。");
                     return -2;
                 }
             }
@@ -667,11 +667,11 @@ namespace Dalamud.Injector
                 try
                 {
                     GameStart.ClaimSeDebug();
-                    Log.Information("SeDebugPrivilege claimed.");
+                    Log.Information("已获取 SeDebugPrivilege。");
                 }
                 catch (Win32Exception e2)
                 {
-                    Log.Warning(e2, "Failed to claim SeDebugPrivilege");
+                    Log.Warning(e2, "获取 SeDebugPrivilege 失败");
                 }
             }
 
@@ -750,7 +750,7 @@ namespace Dalamud.Injector
                 }
                 else
                 {
-                    Log.Warning($"\"{args[i]}\" is not a valid command line argument, ignoring.");
+                    Log.Warning($"参数 \"{args[i]}\" 非有效命令行参数，已忽略。");
                 }
             }
 
@@ -828,7 +828,7 @@ namespace Dalamud.Injector
             }
             else
             {
-                throw new CommandLineException($"\"{mode}\" is not a valid Dalamud load mode.");
+                throw new CommandLineException($"\"{mode}\" 非有效 Dalamud 加载模式");
             }
 
             if (gamePath == null)
@@ -846,7 +846,7 @@ namespace Dalamud.Injector
                                     new JsonTextReader(new StringReader(File.ReadAllText(launcherConfigPath))))["GamePath"],
                             "game",
                             "ffxiv_dx11.exe");
-                        Log.Information("Using game installation path configuration from from XIVLauncher: {0}", gamePath);
+                        Log.Information("使用 XIVLauncher 配置的游戏安装路径： {0}", gamePath);
                     }
                     else if (dalamudStartInfo.Platform == OSPlatform.Linux)
                     {
@@ -857,7 +857,7 @@ namespace Dalamud.Injector
                             .Where(line => line.Contains('='))
                             .ToDictionary(line => line.Split('=')[0], line => line.Split('=')[1]);
                         gamePath = Path.Combine("Z:" + config["GamePath"].Replace('/', '\\'), "game", "ffxiv_dx11.exe");
-                        Log.Information("Using game installation path configuration from from XIVLauncher Core: {0}", gamePath);
+                        Log.Information("使用 XIVLauncher Core 配置的游戏安装路径： {0}", gamePath);
                     }
                     else
                     {
@@ -865,18 +865,18 @@ namespace Dalamud.Injector
                         var xomlauncherDir = Path.Combine(homeDir, "Library", "Application Support", "XIV on Mac");
                         // we could try to parse the binary plist file here if we really wanted to...
                         gamePath = Path.Combine(xomlauncherDir, "ffxiv", "game", "ffxiv_dx11.exe");
-                        Log.Information("Using default game installation path from XOM: {0}", gamePath);
+                        Log.Information("使用 XOM 默认游戏安装路径： {0}", gamePath);
                     }
                 }
                 catch (Exception)
                 {
-                    Log.Error("Failed to read launcher config to get the set-up game path, please specify one using -g");
+                    Log.Error("读取启动器配置以获取游戏路径失败，请使用 -g 指定。");
                     return -1;
                 }
 
                 if (!File.Exists(gamePath))
                 {
-                    Log.Error("File not found: {0}", gamePath);
+                    Log.Error("未找到文件： {0}", gamePath);
                     return -1;
                 }
             }
@@ -955,20 +955,20 @@ namespace Dalamud.Injector
                     if (!withoutDalamud && dalamudStartInfo.LoadMethod == LoadMethod.Entrypoint)
                     {
                         var startInfo = AdjustStartInfo(dalamudStartInfo, gamePath);
-                        Log.Information("Using start info: {0}", JsonConvert.SerializeObject(startInfo));
+                        Log.Information("使用启动信息： {0}", JsonConvert.SerializeObject(startInfo));
                         Marshal.ThrowExceptionForHR(
                             RewriteRemoteEntryPointW(p.Handle, gamePath, JsonConvert.SerializeObject(startInfo)));
-                        Log.Verbose("RewriteRemoteEntryPointW called!");
+                        Log.Verbose("已调用 RewriteRemoteEntryPointW。");
                     }
                 },
                 waitForGameWindow);
 
-            Log.Verbose("Game process started with PID {0}", process.Id);
+            Log.Verbose("游戏进程已启动，PID： {0}", process.Id);
 
             if (!withoutDalamud && dalamudStartInfo.LoadMethod == LoadMethod.DllInject)
             {
                 var startInfo = AdjustStartInfo(dalamudStartInfo, gamePath);
-                Log.Information("Using start info: {0}", JsonConvert.SerializeObject(startInfo));
+                Log.Information("使用启动信息： {0}", JsonConvert.SerializeObject(startInfo));
                 Inject(process, startInfo, false);
             }
 
@@ -986,7 +986,7 @@ namespace Dalamud.Injector
                             false,
                             DUPLICATE_HANDLE_OPTIONS.DUPLICATE_SAME_ACCESS))
                     {
-                        Log.Warning("Failed to call DuplicateHandle: Win32 error code {0}", Marshal.GetLastWin32Error());
+                        Log.Warning("调用 DuplicateHandle 失败，Win32 错误码： {0}", Marshal.GetLastWin32Error());
                     }
                 }
             }
@@ -1018,7 +1018,7 @@ namespace Dalamud.Injector
 
         private static int ProcessLaunchTestCommand(List<string> args)
         {
-            Console.WriteLine("Testing launch command.");
+            Console.WriteLine("测试启动命令。");
             args[0] = Process.GetCurrentProcess().MainModule.FileName;
             args[1] = "launch";
 
@@ -1026,7 +1026,7 @@ namespace Dalamud.Injector
             args.Insert(2, $"--handle-owner={inheritableCurrentProcess.Handle}");
 
             for (var i = 0; i < args.Count; i++)
-                Console.WriteLine("Argument {0}: {1}", i, args[i]);
+                Console.WriteLine("参数 {0}： {1}", i, args[i]);
 
             Process helperProcess = new();
             helperProcess.StartInfo.FileName = args[0];
@@ -1035,7 +1035,7 @@ namespace Dalamud.Injector
             helperProcess.StartInfo.RedirectStandardOutput = true;
             helperProcess.StartInfo.RedirectStandardError = true;
             helperProcess.StartInfo.UseShellExecute = false;
-            helperProcess.ErrorDataReceived += new DataReceivedEventHandler((sendingProcess, errLine) => Console.WriteLine($"stderr: \"{errLine.Data}\""));
+            helperProcess.ErrorDataReceived += new DataReceivedEventHandler((sendingProcess, errLine) => Console.WriteLine($"stderr： \"{errLine.Data}\""));
             helperProcess.Start();
             helperProcess.BeginErrorReadLine();
             helperProcess.WaitForExit();
@@ -1048,8 +1048,8 @@ namespace Dalamud.Injector
             var pid = result["pid"];
             var handle = (IntPtr)result["handle"];
             var resultProcess = new ExistingProcess(handle);
-            Console.WriteLine("PID: {0}, Handle: {1}", pid, handle);
-            Console.WriteLine("Press Enter to force quit");
+            Console.WriteLine("PID： {0}，Handle： {1}", pid, handle);
+            Console.WriteLine("按 Enter 键强制退出");
             Console.ReadLine();
             resultProcess.Kill();
             return 0;
@@ -1077,7 +1077,7 @@ namespace Dalamud.Injector
                 }
                 catch (Win32Exception e1)
                 {
-                    Log.Warning(e1, "Failed to copy ACL");
+                    Log.Warning(e1, "复制 ACL 失败");
                 }
             }
 
@@ -1110,11 +1110,11 @@ namespace Dalamud.Injector
 
             if (exitCode > 0)
             {
-                Log.Error("Dalamud.Boot::Initialize returned {ExitCode}", exitCode);
+                Log.Error("Dalamud.Boot::Initialize 返回值： {ExitCode}", exitCode);
                 return;
             }
 
-            Log.Information("Done");
+            Log.Information("完成");
         }
 
         [DllImport("Dalamud.Boot.dll")]
