@@ -84,7 +84,7 @@ public abstract class Window
             Click = _ =>
             {
                 this.internalIsClickthrough = false;
-                this.presetDirty = false;
+                this.presetDirty = true;
                 ImGui.OpenPopup(AdditionsPopupName);
             },
             Priority = int.MinValue,
@@ -672,16 +672,13 @@ public abstract class Window
                 Task.FromResult<IDalamudTextureWrap>(tex));
         }
 
-        if (!this.hasError)
+        if (isErrorStylePushed)
         {
-            this.PostDraw();
+            Style.StyleModelV1.DalamudStandard.Pop();
         }
         else
         {
-            if (isErrorStylePushed)
-            {
-                Style.StyleModelV1.DalamudStandard.Pop();
-            }
+            this.PostDraw();
         }
 
         this.PostHandlePreset(persistence);
@@ -864,7 +861,7 @@ public abstract class Window
         foreach (var button in this.allButtons)
         {
             if (this.internalIsClickthrough && !button.AvailableClickthrough)
-                return;
+                continue;
 
             Vector2 position = new(titleBarRect.Max.X - padR - buttonSize, titleBarRect.Min.Y + style.FramePadding.Y);
             padR += buttonSize + style.ItemInnerSpacing.X;
@@ -908,7 +905,7 @@ public abstract class Window
     private void DrawErrorMessage()
     {
         // TODO: Once window systems are services, offer to reload the plugin
-        ImGui.TextColoredWrapped(ImGuiColors.DalamudRed,Loc.Localize("WindowSystemErrorOccurred", "An error occurred while rendering this window. Please contact the developer for details."));
+        ImGui.TextColoredWrapped(ImGuiColors.DalamudRed, Loc.Localize("WindowSystemErrorOccurred", "An error occurred while rendering this window. Please contact the developer for details."));
 
         ImGuiHelpers.ScaledDummy(5);
 

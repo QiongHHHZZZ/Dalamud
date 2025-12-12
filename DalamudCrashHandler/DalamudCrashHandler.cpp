@@ -293,35 +293,43 @@ std::wstring to_address_string(const DWORD64 address, const bool try_ptrderef = 
 
 void print_exception_info(HANDLE hThread, const EXCEPTION_POINTERS& ex, const CONTEXT& ctx, std::wostringstream& log) {
     std::vector<EXCEPTION_RECORD> exRecs;
-    if (ex.ExceptionRecord) {
+    if (ex.ExceptionRecord)
+    {
         size_t rec_index = 0;
         size_t read;
-        exRecs.emplace_back();
+
         for (auto pRemoteExRec = ex.ExceptionRecord;
-             pRemoteExRec
-             && rec_index < 64
-             && ReadProcessMemory(g_hProcess, pRemoteExRec, &exRecs.back(), sizeof exRecs.back(), &read)
-             && read >= offsetof(EXCEPTION_RECORD, ExceptionInformation)
-             && read >= static_cast<size_t>(reinterpret_cast<const char*>(&exRecs.back().ExceptionInformation[exRecs.back().NumberParameters]) - reinterpret_cast<const char*>(&exRecs.back()));
-             rec_index++) {
+             pRemoteExRec && rec_index < 64;
+             rec_index++)
+        {
+            exRecs.emplace_back();
+
+            if (!ReadProcessMemory(g_hProcess, pRemoteExRec, &exRecs.back(), sizeof exRecs.back(), &read)
+                || read < offsetof(EXCEPTION_RECORD, ExceptionInformation)
+                || read < static_cast<size_t>(reinterpret_cast<const char*>(&exRecs.back().ExceptionInformation[exRecs.
+                    back().NumberParameters]) - reinterpret_cast<const char*>(&exRecs.back())))
+            {
+                exRecs.pop_back();
+                break;
+            }
 
             log << std::format(L"\n异常信息 #{}\n", rec_index);
             log << std::format(L"地址: {:X}\n", exRecs.back().ExceptionCode);
             log << std::format(L"标志: {:X}\n", exRecs.back().ExceptionFlags);
             log << std::format(L"地址: {:X}\n", reinterpret_cast<size_t>(exRecs.back().ExceptionAddress));
-            if (!exRecs.back().NumberParameters)
-                continue;
-            log << L"参数: ";
-            for (DWORD i = 0; i < exRecs.back().NumberParameters; ++i) {
-                if (i != 0)
-                    log << L", ";
-                log << std::format(L"{:X}", exRecs.back().ExceptionInformation[i]);
+            if (exRecs.back().NumberParameters)
+            {
+                log << L"Parameters: ";
+                for (DWORD i = 0; i < exRecs.back().NumberParameters; ++i)
+                {
+                    if (i != 0)
+                        log << L", ";
+                    log << std::format(L"{:X}", exRecs.back().ExceptionInformation[i]);
+                }
             }
 
             pRemoteExRec = exRecs.back().ExceptionRecord;
-            exRecs.emplace_back();
         }
-        exRecs.pop_back();
     }
 
     log << L"\n调用栈\n{";
@@ -854,8 +862,7 @@ int main() {
         https://github.com/sumatrapdfreader/sumatrapdf/blob/master/src/utils/DbgHelpDyn.cpp
         */
 
-        if (g_bSymbolsAvailable)
-        {
+        if (g_bSymbolsAvailable) {
             SymRefreshModuleList(g_hProcess);
         }
         else if (!assetDir.empty())
@@ -870,12 +877,11 @@ int main() {
         else
         {
             g_bSymbolsAvailable = SymInitializeW(g_hProcess, nullptr, true);
-            std::cout << "初始化符号（无PDB）" << std::endl;
+            std::cout << "初始化符号 (无PDB)" << std::endl;
         }
 
-        if (!g_bSymbolsAvailable)
-        {
-            std::wcerr << std::format(L"SymInitialize错误：0x{:x}", GetLastError()) << std::endl;
+        if (!g_bSymbolsAvailable) {
+            std::wcerr << std::format(L"SymInitialize 错误: 0x{:x}", GetLastError()) << std::endl;
         }
 
         if (pProgressDialog)
@@ -966,12 +972,22 @@ int main() {
             while (false);
         }
 
+        const bool is_external_event = exinfo.ExceptionRecord.ExceptionCode == CUSTOM_EXCEPTION_EXTERNAL_EVENT;
+
         std::wostringstream log;
-        log << std::format(L"未处理的本地异常发生于 {}", to_address_string(exinfo.ContextRecord.Rip, false)) << std::endl;
-        log << std::format(L"错误代码：{:X}", exinfo.ExceptionRecord.ExceptionCode) << std::endl;
+
+        if (!is_external_event)
+        {
+            log << std::format(L"未处理的本地异常发生于 {}", to_address_string(exinfo.ContextRecord.Rip, false)) << std::endl;
+            log << std::format(L"错误代码: {:X}", exinfo.ExceptionRecord.ExceptionCode) << std::endl;
+        }
+        else
+        {
+            log << L"C# 运行时 (CLR) 发生错误" << std::endl;
+        }
 
         if (shutup)
-            log << L"======= 崩溃处理程序已被全局静默（已关闭？）=======" << std::endl;
+            log << L"======= 崩溃处理程序已被全局静默 =======" << std::endl;
 
         if (dumpPath.empty())
             log << L"已跳过转储" << std::endl;
@@ -985,9 +1001,19 @@ int main() {
         if (pProgressDialog)
             pProgressDialog->SetLine(3, L"正在刷新模块列表", FALSE, NULL);
 
+        std::wstring window_log_str;
+
+        // Cut the log here for external events, the rest is unreadable and doesn't matter since we can't get
+        // symbols for mixed-mode stacks yet.
+        if (is_external_event)
+            window_log_str = log.str();
+
         SymRefreshModuleList(GetCurrentProcess());
         print_exception_info(exinfo.hThreadHandle, exinfo.ExceptionPointers, exinfo.ContextRecord, log);
-        const auto window_log_str = log.str();
+
+        if (!is_external_event)
+            window_log_str = log.str();
+
         print_exception_info_extended(exinfo.ExceptionPointers, exinfo.ContextRecord, log);
         std::wofstream(logPath) << log.str();
 
