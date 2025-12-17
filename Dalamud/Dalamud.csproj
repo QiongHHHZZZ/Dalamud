@@ -67,7 +67,6 @@
         <PackageReference Include="goatcorp.Reloaded.Hooks" />
         <PackageReference Include="goatcorp.Reloaded.Assembler" />
         <PackageReference Include="JetBrains.Annotations" />
-        <PackageReference Include="Lumina.Excel" />
         <PackageReference Include="Microsoft.Extensions.ObjectPool" />
         <PackageReference Include="Microsoft.Windows.CsWin32">
             <PrivateAssets>all</PrivateAssets>
@@ -104,6 +103,7 @@
         <ProjectReference Include="..\imgui\ImGuiScene\ImGuiScene.csproj" />
         <ProjectReference Include="..\lib\FFXIVClientStructs\FFXIVClientStructs\FFXIVClientStructs.csproj" />
         <ProjectReference Include="..\lib\FFXIVClientStructs\InteropGenerator.Runtime\InteropGenerator.Runtime.csproj" />
+        <ProjectReference Include="..\lib\Lumina.Excel\src\Lumina.Excel\Lumina.Excel.csproj" />
         <ProjectReference Include="..\lib\Lumina\src\Lumina\Lumina.csproj" />
     </ItemGroup>
 

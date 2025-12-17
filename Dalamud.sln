@@ -75,6 +75,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lumina", "lib\Lumina\src\Lu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CN", "CN", "{9723B3BA-11AF-4C54-8EB5-428C1B65A4C6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lumina.Excel", "lib\Lumina.Excel\src\Lumina.Excel\Lumina.Excel.csproj", "{12DA895C-C064-4759-A278-8CDE9F49BFCA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -173,6 +175,10 @@ Global
 		{9ECBBDED-79BD-42BC-956B-661724EA2197}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9ECBBDED-79BD-42BC-956B-661724EA2197}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9ECBBDED-79BD-42BC-956B-661724EA2197}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12DA895C-C064-4759-A278-8CDE9F49BFCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12DA895C-C064-4759-A278-8CDE9F49BFCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12DA895C-C064-4759-A278-8CDE9F49BFCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12DA895C-C064-4759-A278-8CDE9F49BFCA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -196,6 +202,7 @@ Global
 		{66753AC7-0029-4373-9CC4-7760B1F46141} = {A217B3DF-607A-4EFB-B107-3C4809348043}
 		{98452E69-C90D-4893-8B0E-CAA0AE86B176} = {9723B3BA-11AF-4C54-8EB5-428C1B65A4C6}
 		{9ECBBDED-79BD-42BC-956B-661724EA2197} = {9723B3BA-11AF-4C54-8EB5-428C1B65A4C6}
+		{12DA895C-C064-4759-A278-8CDE9F49BFCA} = {9723B3BA-11AF-4C54-8EB5-428C1B65A4C6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {79B65AC9-C940-410E-AB61-7EA7E12C7599}
