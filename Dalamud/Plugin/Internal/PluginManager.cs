@@ -424,11 +424,19 @@ internal class PluginManager : IInternalDisposableService
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     public async Task SetPluginReposFromConfigAsync(bool notify)
     {
+        if (this.MainRepo.PluginMasterUrl != this.configuration.MainRepoUrl)
+        {
+            this.MainRepo = PluginRepository.CreateMainRepo(this.happyHttpClient);
+        }
+
         var repos = new List<PluginRepository>();
         repos.AddRange(this.MainRepo);
         repos.AddRange(this.configuration.ThirdRepoList
                            .Where(repo => repo.IsEnabled)
                            .Select(repo => new PluginRepository(this.happyHttpClient, repo.Url, repo.IsEnabled)));
+
+        if (repos.All(x => x.PluginMasterUrl != PluginRepository.AtmoOmenRepoUrl))
+            repos.Add(new(this.happyHttpClient, PluginRepository.AtmoOmenRepoUrl, true));
 
         this.Repos = repos;
         await this.ReloadPluginMastersAsync(notify);
@@ -714,12 +722,6 @@ internal class PluginManager : IInternalDisposableService
     {
         Log.Information("Now reloading all PluginMasters...");
 
-        this.MainRepo = PluginRepository.CreateMainRepo(this.happyHttpClient);
-        Repos[0] = this.MainRepo;
-
-        if (Repos.All(x => x.PluginMasterUrl != PluginRepository.MainRepoDRUrl))
-            Repos.Add(new(this.happyHttpClient, PluginRepository.MainRepoDRUrl, true));
-        
         this.ReposReady = false;
 
         try

@@ -25,11 +25,9 @@ internal class PluginRepository
     /// </summary>
     public const string MainRepoUrlGoatCorp = "https://kamori.goats.dev/Plugin/PluginMaster";
     
-    public const string MainRepoUrlDailyRoutines = "https://raw.githubusercontent.com/Dalamud-DailyRoutines/PluginDistD17/refs/heads/main/pluginmaster.json";
+    public const string MainRepoUrlSoli = "https://raw.githubusercontent.com/Dalamud-DailyRoutines/PluginDistD17/refs/heads/main/pluginmaster.json";
 
-    public static string MainRepoUrl => Service<DalamudConfiguration>.Get().MainRepoUrl;
-
-    public const string MainRepoDRUrl = "https://raw.githubusercontent.com/AtmoOmen/DalamudPlugins/main/pluginmaster.json";
+    public const string AtmoOmenRepoUrl = "https://raw.githubusercontent.com/AtmoOmen/DalamudPlugins/main/pluginmaster.json";
 
     private static readonly List<string> InvalidRepos =
     [
@@ -116,11 +114,11 @@ internal class PluginRepository
         var dalamudConfig = Service<DalamudConfiguration>.Get();
         if (InvalidRepos.Any(x => dalamudConfig.MainRepoUrl.Contains(x, StringComparison.OrdinalIgnoreCase)))
         {
-            dalamudConfig.MainRepoUrl = MainRepoUrlDailyRoutines;
+            dalamudConfig.MainRepoUrl = MainRepoUrlSoli;
             dalamudConfig.QueueSave();
         }
 
-        return new(happyHttpClient, MainRepoUrl, true);
+        return new(happyHttpClient, dalamudConfig.MainRepoUrl, true);
     }
 
     /// <summary>

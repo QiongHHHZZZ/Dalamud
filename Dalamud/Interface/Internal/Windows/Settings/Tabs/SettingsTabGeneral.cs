@@ -97,12 +97,12 @@ internal sealed class SettingsTabGeneral : SettingsTab
 
         ImGui.Text("默认主库");
         
-        if (ImGui.RadioButton("国服 (Daily Routines)", mainRepoUrl == PluginRepository.MainRepoUrlDailyRoutines))
+        if (ImGui.RadioButton("国服 (Daily Routines)", mainRepoUrl == PluginRepository.MainRepoUrlSoli))
         {
-            config.MainRepoUrl = PluginRepository.MainRepoUrlDailyRoutines;
+            config.MainRepoUrl = PluginRepository.MainRepoUrlSoli;
             config.QueueSave();
             
-            _ = Service<PluginManager>.Get().ReloadPluginMastersAsync();
+            _ = Service<PluginManager>.Get().SetPluginReposFromConfigAsync(true);
         }
         
         if (ImGui.RadioButton("国际服 (goatcorp)", mainRepoUrl == PluginRepository.MainRepoUrlGoatCorp))
@@ -110,7 +110,7 @@ internal sealed class SettingsTabGeneral : SettingsTab
             config.MainRepoUrl = PluginRepository.MainRepoUrlGoatCorp;
             config.QueueSave();
             
-            _ = Service<PluginManager>.Get().ReloadPluginMastersAsync();
+            _ = Service<PluginManager>.Get().SetPluginReposFromConfigAsync(true);
         }
         
         ImGui.AlignTextToFramePadding();
@@ -123,15 +123,16 @@ internal sealed class SettingsTabGeneral : SettingsTab
         if (ImGui.IsItemDeactivatedAfterEdit())
         {
             if (string.IsNullOrWhiteSpace(mainRepoUrl))
-                mainRepoUrl = PluginRepository.MainRepoUrlDailyRoutines;
+                mainRepoUrl = PluginRepository.MainRepoUrlSoli;
             
             config.MainRepoUrl = mainRepoUrl;
             config.QueueSave();
             
-            _ = Service<PluginManager>.Get().ReloadPluginMastersAsync();
+            _ = Service<PluginManager>.Get().SetPluginReposFromConfigAsync(true);
         }
         
         ImGui.TextDisabled("选择 Dalamud 默认将会加载的主库, 你也可以选择自定义主库 (请注意 API 版本)");
+        ImGui.TextDisabled("切换主库后你将需要卸载并重新安装上一个主库的插件，这是预期行为");
         
         ImGuiHelpers.ScaledDummy(20);
 
