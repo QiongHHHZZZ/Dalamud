@@ -73,7 +73,7 @@ public enum DalamudAsset
     [DalamudAsset(DalamudAssetPurpose.TextureFromPng)]
     [DalamudAssetPath("UIRes", "troubleIcon.png")]
     TroubleIcon = 1006,
-    
+
     /// <summary>
     /// <see cref="DalamudAssetPurpose.TextureFromPng"/>: The plugin trouble icon overlay.
     /// </summary>
@@ -130,7 +130,14 @@ public enum DalamudAsset
 
 
     /// <summary>
-    /// <see cref="DalamudAssetPurpose.Font"/>: 虚假的Noto Sans CJK JP Medium.
+    /// <see cref="DalamudAssetPurpose.TextureFromPng"/>: Atlas containing badges.
+    /// </summary>
+    [DalamudAsset(DalamudAssetPurpose.TextureFromPng)]
+    [DalamudAssetPath("UIRes", "badgeAtlas.png")]
+    BadgeAtlas = 1015,
+
+    /// <summary>
+    /// <see cref="DalamudAssetPurpose.Font"/>: Noto Sans CJK JP Medium.
     /// </summary>
     [DalamudAsset(DalamudAssetPurpose.Font)]
     [DalamudAssetPath("UIRes", "NotoSansCJKsc-Regular.otf")]
